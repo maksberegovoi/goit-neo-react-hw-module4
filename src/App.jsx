@@ -7,6 +7,7 @@ import axios from "axios";
 import Loader from "./components/Loader/Loader.jsx";
 import toast from "react-hot-toast";
 import LoadMoreButton from "./components/LoadMoreButton/LoadMoreButton.jsx";
+import ImageModal from "./components/ImageModal/ImageModal.jsx";
 
 function App() {
   const [images, setImages] = useState([])
@@ -15,15 +16,16 @@ function App() {
 
   const [searchQuery, setSearchQuery] = useState('')
 
-  const [totalPhotos, setTotalPhotos] = useState(12)
-  const [totalPages, setTotalPages] = useState(1)
   const [page, setPage] = useState(1)
+
+  const [modalIsOpen, setModalIsOpen] = useState(false)
+  const [selectedImgSrc, setSelectedImgSrc] = useState(null)
+  const [selectedAlt, setSelectedAlt] = useState('')
 
   const fetchImages = async () => {
     try {
       setLoading(true)
       setError(false)
-      setImages([])
       const response = await axios.get("https://api.unsplash.com/search/photos/?client_id=6PTNtlyi9a_5tMdeM29V_3rZrnHFA219cFWwdErlECs", {
         params: {
           query: searchQuery,
@@ -32,10 +34,9 @@ function App() {
         }
       })
 
-      const {total, total_pages, results} = response.data
-      setImages(results)
-      setTotalPhotos(total)
-      setTotalPages(total_pages)
+      const {results} = response.data
+      setImages([...images, ...results])
+
     } catch(e){
       setError(true)
       console.log(e)
@@ -51,14 +52,26 @@ function App() {
      }
 
      setSearchQuery(search)
+     setImages([])
    }
+
+  const handleImageClick = (imgSrc, alt) => {
+    setSelectedImgSrc(imgSrc)
+    setSelectedAlt(alt || '')
+    setModalIsOpen(true)
+  }
+
+  const handleCloseModal = () => {
+    setModalIsOpen(false)
+    setSelectedImgSrc(null)
+    setSelectedAlt('')
+  }
 
   useEffect(() => {
     if(searchQuery) {
       fetchImages()
     }
-  }, [searchQuery]);
-
+  }, [searchQuery, page]);
 
 
   return (
@@ -66,10 +79,11 @@ function App() {
       <SearchBar onSubmit={handleSearch}/>
       {error && <ErrorMessage/>}
       <section style={{display: 'flex', flexDirection: 'column'}}>
-        <ImageGallery images={images}/>
-        {!loading && <LoadMoreButton/>}
-        {loading && <Loader loading={loading}/>}
+        <ImageGallery images={images} onImageClick={handleImageClick}/>
+        <Loader loading={loading}/>
+        {(!loading && images.length) && <LoadMoreButton page={page} setPage={setPage}/>}
       </section>
+      <ImageModal isOpen={modalIsOpen} onRequestClose={handleCloseModal} imgSrc={selectedImgSrc} alt={selectedAlt} />
     </div>
   )
 }

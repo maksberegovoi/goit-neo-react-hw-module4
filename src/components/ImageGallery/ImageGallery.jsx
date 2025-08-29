@@ -2,18 +2,22 @@ import React from 'react';
 import ImageCard from "../ImageCard/ImageCard.jsx";
 import styles from './ImageGallery.module.css'
 
-const ImageGallery = ({ images }) => {
+const ImageGallery = ({ images, onImageClick }) => {
 
   return (
     <ul className={styles.gallery}>
       {
         images.map(image => {
-          let {urls} = image;
-          return <ImageCard
-            key={image.id}
-            src={urls.small}
-            alt={'alt'}
-          />
+          const { urls, alt_description } = image;
+          const alt = alt_description || 'Image';
+          return (
+            <ImageCard
+              key={image.id}
+              src={urls}
+              alt={alt}
+              onClick={(srcRegular) => onImageClick && onImageClick(srcRegular, alt)}
+            />
+          );
         })
       }
     </ul>

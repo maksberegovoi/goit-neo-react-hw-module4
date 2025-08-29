@@ -2,10 +2,13 @@ import React from 'react';
 import styles from './LoadMoreButton.module.css'
 
 
-const LoadMoreButton = () => {
+const LoadMoreButton = ({page, setPage}) => {
+
   return (
     <div style={{display: 'flex', justifyContent: 'center'}}>
-      <button className={styles.button}>Load More</button>
+      <button
+        onClick={()=> setPage(page + 1)}
+        className={styles.button}>Load More</button>
     </div>
   );
 };
