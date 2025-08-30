@@ -5,7 +5,7 @@ import {useEffect, useState} from "react";
 import ErrorMessage from "./components/ErrorMessage/ErrorMessage.jsx";
 import axios from "axios";
 import Loader from "./components/Loader/Loader.jsx";
-import toast from "react-hot-toast";
+import toast, {Toaster} from "react-hot-toast";
 import LoadMoreButton from "./components/LoadMoreButton/LoadMoreButton.jsx";
 import ImageModal from "./components/ImageModal/ImageModal.jsx";
 
@@ -50,7 +50,6 @@ function App() {
        return toast.error('You need to type something in search form before' +
          ' request...')
      }
-
      setSearchQuery(search)
      setImages([])
    }
@@ -76,6 +75,7 @@ function App() {
 
   return (
     <div>
+      <div><Toaster position="top-right"/></div>
       <SearchBar onSubmit={handleSearch}/>
       {error && <ErrorMessage/>}
       <section style={{display: 'flex', flexDirection: 'column'}}>
